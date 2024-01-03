@@ -31,6 +31,9 @@ Route::resource('/HubunganKK', HubunganKKController::class);
 Route::resource('/Agama', AgamaController::class);
 Route::resource('/AnggotaKK', AnggotaKKController::class);
 Route::resource('/Dashboard', DashboardController::class);
+Route::get('/KK/Anggota/{nokk}', [KartuKeluargaController::class, 'anggota']);
+Route::get('/KK/Anggota/create/{nokk}', [KartuKeluargaController::class, 'addAnggota']);
+Route::get('/KK/Anggota/create/{nokk}/{id}', [KartuKeluargaController::class, 'editAnggota']);
 
 Route::get('/login', [LoginController::class, 'index'])->name('login');
 

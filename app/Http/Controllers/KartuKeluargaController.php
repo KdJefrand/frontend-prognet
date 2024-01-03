@@ -61,4 +61,19 @@ class KartuKeluargaController extends Controller
     {
         //
     }
+
+    public function anggota(string $id)
+    {
+        return view('anggotakk');
+    }
+
+    public function addAnggota(string $id)
+    {
+        return view('anggotakk_input');
+    }
+
+    public function editAnggota(string $id)
+    {
+        return view('anggotakk_edit');
+    }
 }

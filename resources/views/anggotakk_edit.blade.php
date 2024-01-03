@@ -12,7 +12,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="description" content="" />
     <meta name="author" content="" />
-    <title>Anggota - Tambah - KK</title>
+    <title>Anggota - Edit - KK</title>
     <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
@@ -44,7 +44,7 @@
                 <h1 class="mt-4">ANGGOTA KK</h1>
                 <div class="card mb-4">
                     <div class="card-body">
-                        Tambah Anggota KK
+                        Edit Anggota KK
                     </div>
                 </div>
                 <div class="container">
@@ -52,28 +52,27 @@
                         <div class="col-lg-5">
                             <div class="card shadow-lg border-0 rounded-lg mt-3 mb-3">
                                 <div class="card-header">
-                                    <h3 class="text-center font-weight-light my-4">Input Anggota Baru</h3>
+                                    <h3 class="text-center font-weight-light my-4">Edit Anggota Baru</h3>
                                 </div>
                                 <div class="card-body">
                                     <form id="myForm">
                                         <div class="form-floating mb-3">
-                                            <input class="form-control" list="datalistNokk" id="nokk"
-                                                autocomplete="off">
-                                            <datalist id="datalistNokk"></datalist>
-                                            <label for="nokk">No. KK (Before: <span id="nokkBefore"></span>)</label>
+                                            <select id="nokk" class="form-control">
+                                                <option selected hidden>Pilih No. KK</option>
+                                            </select>
+                                            <label for="nokk">No. KK</label>
                                         </div>
                                         <div class="form-floating mb-3">
-                                            <input class="form-control" list="datalistNama" id="namapenduduk"
-                                                autocomplete="off">
-                                            <datalist id="datalistNama"></datalist>
-                                            <label for="namapenduduk">Nama Penduduk (Before: <span
-                                                    id="namaBefore"></span>)</label>
+                                            <select id="nama" class="form-control">
+                                                <option selected hidden>Pilih Penduduk</option>
+                                            </select>
+                                            <label for="nama">Nama Penduduk</label>
                                         </div>
                                         <div class="form-floating mb-3">
-                                            <select name="hubungankk" id="hubungankk-select" class="form-control">
+                                            <select name="hubungankk" id="hubungankk" class="form-control">
                                                 <option selected hidden>Pilih Hubungan</option>
                                             </select>
-                                            <label for="hubungankk-select">Hubungan</label>
+                                            <label for="hubungankk">Hubungan</label>
                                         </div>
                                         <div class="form-floating mb-3">
                                             <select name="statusaktif" id="statusaktif" class="form-control">
@@ -85,7 +84,7 @@
                                         </div>
                                         <input type="hidden" id="editItemId" name="editItemId">
                                         <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
-                                            <a class="btn btn-primary" href="/AnggotaKK">Kembali</a>
+                                            <a class="btn btn-primary" id="back">Kembali</a>
                                             <button type="submit" class="btn btn-primary">Buat</button>
                                         </div>
                                     </form>
@@ -116,153 +115,168 @@
     <script src="{{ asset('js/datatables-simple-demo.js') }}"></script>
     <script src="{{ asset('js/scripts.js') }}"></script>
     <script>
-        const nokkSelect = document.getElementById('datalistNokk');
+        let backId = '';
+        document.addEventListener('DOMContentLoaded', function() {
+            const nokkSelect = document.getElementById('nokk');
 
-        fetch('https://api-group4-prognet.manpits.xyz/api/KK', {
-                headers: {
-                    'Authorization': 'Bearer ' + localStorage.getItem('token')
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                data.forEach(kk => {
-                    const option = document.createElement('option');
-                    option.textContent = kk.nokk;
-                    option.value = kk.id;
-                    nokkSelect.appendChild(option);
-                });
-            })
-            .catch(error => {
-                console.error('Error fetching data:', error);
-            });
-
-        const namaSelect = document.getElementById('datalistNama');
-
-        fetch('https://api-group4-prognet.manpits.xyz/api/Penduduk', {
-                headers: {
-                    'Authorization': 'Bearer ' + localStorage.getItem('token')
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                data.forEach(row => {
-                    const option = document.createElement('option');
-                    option.textContent = row.nama;
-                    option.value = row.id;
-                    namaSelect.appendChild(option);
-                });
-            })
-            .catch(error => {
-                console.error('Error fetching data:', error);
-            });
-
-        const hubungankkSelect = document.getElementById('hubungankk-select');
-
-        fetch('https://api-group4-prognet.manpits.xyz/api/HubunganKK', {
-                headers: {
-                    'Authorization': 'Bearer ' + localStorage.getItem('token')
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                const hubungankkSelect = document.getElementById('hubungankk-select');
-                data.forEach(hubungankk => {
-                    const option = document.createElement('option');
-                    option.value = hubungankk.id;
-                    option.textContent = hubungankk.hubungankk;
-                    hubungankkSelect.appendChild(option);
-                });
-            })
-            .catch(error => {
-                console.error('Error fetching data:', error);
-            });
-        // Get the item ID from the URL
-        const itemId = window.location.pathname.split('/').pop();
-
-        // Fetch existing data for editing
-        fetch(`https://api-group4-prognet.manpits.xyz/api/AnggotaKK/${itemId}`, {
-                headers: {
-                    'Authorization': 'Bearer ' + localStorage.getItem('token')
-                }
-            })
-            .then(response => response.json())
-            .then(existingData => {
-                // Fill the form fields with existing data
-                document.getElementById('nokk').value = existingData[0].kk_id;
-                document.getElementById('namapenduduk').value = existingData[0].penduduk_id;
-                document.getElementById('nokkBefore').textContent = existingData[0].nokk;
-                document.getElementById('namaBefore').textContent = existingData[0].nama;
-
-                setTimeout(() => {
-                    // Select the correct option in the dropdown
-                    const hubungankkId = document.getElementById('hubungankk-select');
-                    const selectHubungan = hubungankkId.querySelector(
-                        `option[value="${existingData[0].hubungankk_id}"]`);
-                    // Set selected value here
-                    if (selectHubungan) {
-                        selectHubungan.selected = true;
-                    }
-                }, 1000);
-                const statusaktifId = document.getElementById('statusaktif');
-                const selectStatus = statusaktifId.querySelector(`option[value="${existingData[0].statusaktif}"]`);
-
-                if (selectStatus) {
-                    selectStatus.selected = true;
-                }
-                document.getElementById('editItemId').value = existingData[0].id;
-            })
-            .catch(error => {
-                console.error('Error fetching existing data:', error);
-            });
-    </script>
-    <script>
-        document.getElementById('myForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-
-            // Get the edited values
-            const nokkValue = document.getElementById('nokk').value;
-            const pendudukValue = document.getElementById('namapenduduk').value;
-            const hubungankkValue = document.getElementById('hubungankk-select').value;
-            const statusaktifValue = document.getElementById('statusaktif').value;
-            const itemId = document.getElementById('editItemId').value;
-
-            console.log(itemId);
-            console.log(nokkValue);
-            console.log(pendudukValue);
-            console.log(statusaktifValue);
-            console.log(hubungankkValue);
-
-            // Prepare the data to be sent to the server for update
-            const updatedData = {
-                id: itemId,
-                kk_id: nokkValue,
-                penduduk_id: pendudukValue,
-                hubungankk_id: hubungankkValue,
-                statusaktif: statusaktifValue,
-            };
-
-            fetch(`https://api-group4-prognet.manpits.xyz/api/AnggotaKK/${itemId}`, {
-                    method: 'PUT',
+            fetch('https://api-group4-prognet.manpits.xyz/api/KK', {
                     headers: {
-                        'Content-Type': 'application/json',
                         'Authorization': 'Bearer ' + localStorage.getItem('token')
-                    },
-                    body: JSON.stringify(updatedData),
+                    }
                 })
                 .then(response => response.json())
                 .then(data => {
-                    // Handle the response from the server
-                    console.log('Update response:', data);
+                    data.forEach(kk => {
+                        const option = document.createElement('option');
+                        option.value = kk.id;
+                        option.textContent = kk.nokk;
+                        nokkSelect.appendChild(option);
 
-                    // Redirect to /AnggotaKK on successful update
-                    if (data !== null) {
-                        window.location.href = '/AnggotaKK';
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
+
+            const namaSelect = document.getElementById('nama');
+
+            fetch('https://api-group4-prognet.manpits.xyz/api/Penduduk', {
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(penduduk => {
+                        const option = document.createElement('option');
+                        option.value = penduduk.id;
+                        option.textContent = penduduk.nama;
+                        namaSelect.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
+
+            const hubungankkSelect = document.getElementById('hubungankk');
+
+            fetch('https://api-group4-prognet.manpits.xyz/api/HubunganKK', {
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(hubungankk => {
+                        const option = document.createElement('option');
+                        option.value = hubungankk.id;
+                        option.textContent = hubungankk.hubungankk;
+                        hubungankkSelect.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
+
+            // Get the item ID from the URL
+            const itemId = window.location.pathname.split('/').pop();
+
+            // Fetch existing data for editing
+            fetch(`https://api-group4-prognet.manpits.xyz/api/AnggotaKK/${itemId}`, {
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    }
+                })
+                .then(response => response.json())
+                .then(existingData => {
+                    // Check if data is not empty
+                    if (existingData.length > 0) {
+                        // Select the correct option in the dropdown
+                        setTimeout(() => {
+                            const kkId = document.getElementById('nokk');
+                            const selectedNokk = kkId.querySelector(
+                                `option[value="${existingData[0].kk_id}"]`);
+
+                            console.log(existingData[0].kk_id);
+                            if (selectedNokk) {
+                                selectedNokk.selected = true;
+                                backId = selectedNokk.textContent;
+                                document.getElementById('back').href = `/KK/Anggota/${backId}`
+                            }
+
+                            const pendudukId = document.getElementById('nama');
+                            const selectedPenduduk = pendudukId.querySelector(
+                                `option[value="${existingData[0].penduduk_id}"]`);
+                            console.log(existingData[0].penduduk_id);
+                            if (selectedPenduduk) {
+                                selectedPenduduk.selected = true;
+                            }
+
+                            const hubungankkId = document.getElementById('hubungankk');
+                            const selectedHubungankk = hubungankkId.querySelector(
+                                `option[value="${existingData[0].hubungankk_id}"]`);
+                            console.log(existingData[0].hubungankk_id);
+                            if (selectedHubungankk) {
+                                selectedHubungankk.selected = true;
+                            }
+                        }, 1000);
+
+                        const statusaktifId = document.getElementById('statusaktif');
+                        const selectedstatusaktif = statusaktifId.querySelector(
+                            `option[value="${existingData[0].statusaktif}"]`);
+                        console.log(existingData[0].statusaktif);
+                        if (selectedstatusaktif) {
+                            selectedstatusaktif.selected = true;
+                        }
+                        document.getElementById('editItemId').value = existingData[0].id;
                     }
                 })
                 .catch(error => {
-                    console.error('Error updating data:', error);
-                    alert("Data tidak sesuai!");
+                    console.error('Error fetching existing data:', error);
                 });
+
+            document.getElementById('myForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                // Get the edited values
+                const nokkValue = document.getElementById('nokk').value;
+                const namaValue = document.getElementById('nama').value;
+                const hubungankkValue = document.getElementById('hubungankk').value;
+                const statusaktifValue = document.getElementById('statusaktif').value;
+                const itemId = document.getElementById('editItemId').value;
+
+                // Prepare the data to be sent to the server for update
+                const updatedData = {
+                    id: itemId,
+                    kk_id: nokkValue,
+                    penduduk_id: namaValue,
+                    hubungankk_id: hubungankkValue,
+                    statusaktif: statusaktifValue,
+                };
+
+                fetch(`https://api-group4-prognet.manpits.xyz/api/AnggotaKK/${itemId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + localStorage.getItem('token')
+                        },
+                        body: JSON.stringify(updatedData),
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        // Handle the response from the server
+                        console.log('Update response:', data);
+
+                        // Redirect to /Penduduk on successful update
+                        if (data !== null) {
+                            console.log(backId);
+                            window.location.href = `/KK/Anggota/${backId}`;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error updating data:', error);
+                    });
+            });
         });
     </script>
 </body>
