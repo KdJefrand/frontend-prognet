@@ -35,6 +35,7 @@
                         <div>
                             <a id="linkAdd" type="button" class="btn btn-primary">Tambah Anggota
                                 KK</a>
+                            <a type="button" class="btn btn-secondary" href="/KK">Kembali</a>
                         </div>
                     </div>
                     <div class="card-body">
