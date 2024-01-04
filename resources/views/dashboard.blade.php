@@ -18,7 +18,6 @@
                 // Update the count in the HTML
                 document.getElementById('agamaCount').innerText = data.agama;
                 document.getElementById('pendudukCount').innerText = data.penduduk;
-                document.getElementById('anggotaCount').innerText = data.anggota;
                 document.getElementById('hubunganCount').innerText = data.hubungan;
                 document.getElementById('kkCount').innerText = data.kk;
             })
