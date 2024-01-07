@@ -55,7 +55,7 @@
                                 <div class="card-body">
                                     <form id="myForm">
                                         <div class="form-floating mb-3">
-                                            <input class="form-control" id="nik" name="nik" type="text"
+                                            <input class="form-control" id="nik" name="nik" type="text" readonly
                                                 placeholder="" />
                                             <label for="nik">NIK</label>
                                         </div>

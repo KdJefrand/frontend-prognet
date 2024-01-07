@@ -176,37 +176,71 @@
 
             document.getElementById('myForm').addEventListener('submit', function(event) {
                 event.preventDefault();
+                // Get the values from the form
+                const nikValue = document.getElementById('namapenduduk').value;
+                const hubValue = document.getElementById('hubungankk').value;
 
-                const nokkValue = document.getElementById('nokk').value;
-                const namapendudukValue = document.getElementById('namapenduduk').value;
-                const hubungankkValue = document.getElementById('hubungankk').value;
-                const statusaktifValue = document.getElementById('statusaktif').value;
-
-                // Prepare the form data
-                const formData = new FormData();
-                formData.append('kk_id', nokkValue);
-                formData.append('penduduk_id', namapendudukValue);
-                formData.append('hubungankk_id', hubungankkValue);
-                formData.append('statusaktif', statusaktifValue);
-
-                // Make a POST request using the Fetch API
+                // Fetch existing data to check if NIK already exists
                 fetch('https://api-group4-prognet.manpits.xyz/api/AnggotaKK', {
-                        method: 'POST',
-                        body: formData,
+                        method: 'GET',
                         headers: {
                             'Authorization': 'Bearer ' + localStorage.getItem('token')
-                        },
+                        }
                     })
                     .then(response => response.json())
-                    .then(data => {
-                        // Handle the response from the server (you can replace this with your logic)
-                        console.log('Server response:', data);
-                        if (data !== null) {
-                            window.location.href = `/KK/Anggota/${itemId}`;
+                    .then(existingData => {
+                        // Check if the NIK already exists
+                        const nikExists = existingData.some(anggota => {
+                            // console.log(anggota.penduduk_id);
+                            // console.log(nikValue);
+                            return anggota.penduduk_id == nikValue;
+                        });
+                        const hubExists = existingData.some(anggota => {
+                            console.log(anggota.hubungankk);
+                            return anggota.hubungankk == "Kepala Keluarga";
+                        });
+
+                        if (nikExists) {
+                            // Handle the case where the NIK already exists
+                            alert('Penduduk sudah terdaftar!');
+                        } else if (hubExists) {
+                            alert('Kepala Keluarga sudah ada!');
+                        } else {
+                            const nokkValue = document.getElementById('nokk').value;
+                            const namapendudukValue = document.getElementById('namapenduduk').value;
+                            const hubungankkValue = document.getElementById('hubungankk').value;
+                            const statusaktifValue = document.getElementById('statusaktif').value;
+
+                            // Prepare the form data
+                            const formData = new FormData();
+                            formData.append('kk_id', nokkValue);
+                            formData.append('penduduk_id', namapendudukValue);
+                            formData.append('hubungankk_id', hubungankkValue);
+                            formData.append('statusaktif', statusaktifValue);
+
+                            // Make a POST request using the Fetch API
+                            fetch('https://api-group4-prognet.manpits.xyz/api/AnggotaKK', {
+                                    method: 'POST',
+                                    body: formData,
+                                    headers: {
+                                        'Authorization': 'Bearer ' + localStorage.getItem('token')
+                                    },
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    // Handle the response from the server (you can replace this with your logic)
+                                    console.log('Server response:', data);
+                                    if (data !== null) {
+                                        //window.location.href = `/KK/Anggota/${itemId}`;
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error submitting form:', error);
+                                });
                         }
                     })
                     .catch(error => {
-                        console.error('Error submitting form:', error);
+                        console.error('Error fetching existing data:', error);
                     });
             });
         });

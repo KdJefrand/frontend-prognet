@@ -82,36 +82,61 @@
         <script src="{{ asset('js/datatables-simple-demo.js')}}"></script>
         <script src="{{ asset('js/scripts.js')}}"></script>
         <script>
-            document.getElementById('myForm').addEventListener('submit', function(event) {
-                event.preventDefault();
+                document.getElementById('myForm').addEventListener('submit', function(event) {
+        event.preventDefault();
 
-                // Get the value of the 'hubungankk' input
-                const hubungankkValue = document.getElementById('hubungankk').value;
+        // Get the value of the 'hubungankk' input
+        const hubungankkValue = document.getElementById('hubungankk').value;
 
-                // Prepare the form data
-                const formData = new FormData();
-                formData.append('hubungankk', hubungankkValue);
+        // Fetch existing data to check if it already exists
+        fetch('https://api-group4-prognet.manpits.xyz/api/HubunganKK', {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+            }
+        })
+        .then(response => response.json())
+        .then(existingData => {
+            // Check if the data already exists
+            const dataExists = existingData.some(item => {
+                return item.hubungankk === hubungankkValue;
+            });
 
-                // Make a POST request using the Fetch API
+            if (dataExists) {
+                // Handle the case where the data already exists
+                alert('Hubungan Ini Sudah Ada!');
+            } else {
+                // Data doesn't exist, proceed with insertion or saving
+                const updatedData = {
+                    hubungankk: hubungankkValue
+                    // Add other fields if needed
+                };
+
                 fetch('https://api-group4-prognet.manpits.xyz/api/HubunganKK', {
-                    method: 'POST',
-                    body: formData,
+                    method: 'POST', // or 'PUT' for updating existing data
                     headers: {
-                        'Authorization' : 'Bearer ' + localStorage.getItem('token')
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + localStorage.getItem('token')
                     },
+                    body: JSON.stringify(updatedData),
                 })
                 .then(response => response.json())
                 .then(data => {
-                    // Handle the response from the server (you can replace this with your logic)
-                    console.log('Server response:', data);
+                    console.log('Insertion response:', data);
+                    // Handle success or redirect if needed
                     if (data !== null) {
                         window.location.href = '/HubunganKK';
                     }
                 })
                 .catch(error => {
-                    console.error('Error submitting form:', error);
+                    console.error('Error inserting data:', error);
                 });
-            });
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching existing data:', error);
+        });
+    });
         </script>
     </body>
 </html>

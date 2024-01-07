@@ -106,29 +106,45 @@
         <!-- Script to Handle Edit Form Submission -->
         <script>
         document.getElementById('myForm').addEventListener('submit', function(event) {
-            event.preventDefault();
+    event.preventDefault();
 
-            // Get the edited values
-            const editedHubunganKK = document.getElementById('hubungankk').value;
-            const itemId = document.getElementById('editItemId').value;
+    // Get the edited values
+    const editedHubunganKK = document.getElementById('hubungankk').value;
+    const itemId = document.getElementById('editItemId').value;
 
-            // Prepare the data to be sent to the server for update
-            const updatedData = {
+    // Fetch existing data for all hubungankk to check for duplication
+    fetch(`https://api-group4-prognet.manpits.xyz/api/HubunganKK`, {
+        headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('token')
+        }
+    })
+    .then(response => response.json())
+    .then(existingData => {
+        // Check if the edited value already exists in the database
+        const isDuplicate = existingData.some(data => data.hubungankk === editedHubunganKK && data.id !== itemId);
+
+        if (isDuplicate) {
+            alert('Nama Hubungan KK Sudah Ada!');
+            return; // Stop the further execution of the function
+        }
+
+        // Prepare the data to be sent to the server for update
+        const updatedData = {
             id: itemId,
             hubungankk: editedHubunganKK,
-            };
+        };
 
-            // Make a PUT request using the Fetch API (replace 'http://example.com/update-endpoint' with your actual update endpoint)
-            fetch(`https://api-group4-prognet.manpits.xyz/api/HubunganKK/${itemId}`, {
+        // Make a PUT request using the Fetch API
+        fetch(`https://api-group4-prognet.manpits.xyz/api/HubunganKK/${itemId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization' : 'Bearer ' + localStorage.getItem('token')
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
             },
             body: JSON.stringify(updatedData),
-            })
-            .then(response => response.json())
-            .then(data => {
+        })
+        .then(response => response.json())
+        .then(data => {
             // Handle the response from the server
             console.log('Update response:', data);
 
@@ -136,11 +152,16 @@
             if (data !== null) {
                 window.location.href = '/HubunganKK';
             }
-            })
-            .catch(error => {
+        })
+        .catch(error => {
             console.error('Error updating data:', error);
-            });
         });
+    })
+    .catch(error => {
+        console.error('Error fetching existing data:', error);
+    });
+});
+
         </script>
     </body>
 </html>

@@ -75,40 +75,63 @@
         <script src="{{ asset('js/scripts.js')}}"></script>
         <script>
             document.getElementById('myForm').addEventListener('submit', function(event) {
-                event.preventDefault();
+    event.preventDefault();
 
-                // Get the value of the 'nokk' input
-                const nokkValue = document.getElementById('nokk').value;
-                const statusaktifValue = document.getElementById('statusaktif').value;
+    // Get the value of the 'nokk' input
+    const nokkValue = document.getElementById('nokk').value;
+    const statusaktifValue = document.getElementById('statusaktif').value;
 
-                console.log(nokkValue);
-                console.log(statusaktifValue);
+    // Fetch existing data to check if NoKK already exists
+    fetch('https://api-group4-prognet.manpits.xyz/api/KK', {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('token')
+        }
+    })
+    .then(response => response.json())
+    .then(existingData => {
+        // Check if the NoKK already exists
+        const nokkExists = existingData.some(kk => {
+            return kk.nokk === nokkValue;
+        });
 
-                // Prepare the form data
-                const formData = new FormData();
-                formData.append('nokk', nokkValue);
-                formData.append('statusaktif', statusaktifValue);
+        if (nokkExists) {
+            // Handle the case where the NoKK already exists
+            alert('No KK Sudah Ada!! Gunakan No KK Lain!');
+        } else {
+            // If NoKK is unique, continue to submit the form data
 
-                // Make a POST request using the Fetch API
-                fetch('https://api-group4-prognet.manpits.xyz/api/KK', {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'Authorization' : 'Bearer ' + localStorage.getItem('token')
-                    },
-                })
-                .then(response => response.json())
-                .then(data => {
-                    // Handle the response from the server (you can replace this with your logic)
-                    console.log('Server response:', data);
-                    if (data !== null) {
-                        window.location.href = '/KK';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error submitting form:', error);
-                });
+            // Prepare the form data
+            const formData = new FormData();
+            formData.append('nokk', nokkValue);
+            formData.append('statusaktif', statusaktifValue);
+
+            // Make a POST request using the Fetch API
+            fetch('https://api-group4-prognet.manpits.xyz/api/KK', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Handle the response from the server
+                console.log('Server response:', data);
+                if (data !== null) {
+                    window.location.href = '/KK';
+                }
+            })
+            .catch(error => {
+                console.error('Error submitting form:', error);
             });
+        }
+    })
+    .catch(error => {
+        console.error('Error fetching existing data:', error);
+    });
+});
+
         </script>
     </body>
 </html>

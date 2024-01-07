@@ -47,7 +47,7 @@
                             <div class="row justify-content-center">
                                 <div class="col-lg-5">
                                     <div class="card shadow-lg border-0 rounded-lg mt-3 mb-3">
-                                        <div class="card-header"><h3 class="text-center font-weight-light my-4">Input Agama Baru</h3></div>
+                                        <div class="card-header"><h3 class="text-center font-weight-light my-4">Edit Agama</h3></div>
                                         <div class="card-body">
                                             <form id="myForm">
                                                 <div class="form-floating mb-3">
@@ -107,29 +107,46 @@
         <!-- Script to Handle Edit Form Submission -->
         <script>
         document.getElementById('myForm').addEventListener('submit', function(event) {
-            event.preventDefault();
+    event.preventDefault();
 
-            // Get the edited values
-            const editedAgama = document.getElementById('agama').value;
-            const itemId = document.getElementById('editItemId').value;
+    // Get the edited values
+    const editedAgama = document.getElementById('agama').value;
+    const itemId = document.getElementById('editItemId').value;
 
-            // Prepare the data to be sent to the server for update
-            const updatedData = {
+    // Check for duplicate agama name
+    fetch('https://api-group4-prognet.manpits.xyz/api/Agama', {
+        headers:{
+            'Authorization' : 'Bearer ' + localStorage.getItem('token')
+        }
+    })
+    .then(response => response.json())
+    .then(existingAgamas => {
+        const isDuplicate = existingAgamas.some(agama => 
+            agama.agama.toLowerCase() === editedAgama.toLowerCase() && agama.id !== parseInt(itemId)
+        );
+
+        if (isDuplicate) {
+            alert('Nama Agama Sudah Ada! Silahkan Pilih Nama Agama Lain.');
+            return;
+        }
+
+        // Prepare the data to be sent to the server for update
+        const updatedData = {
             id: itemId,
             agama: editedAgama,
-            };
+        };
 
-            // Make a PUT request using the Fetch API (replace 'http://example.com/update-endpoint' with your actual update endpoint)
-            fetch(`https://api-group4-prognet.manpits.xyz/api/Agama/${itemId}`, {
+        // Make a PUT request using the Fetch API
+        fetch(`https://api-group4-prognet.manpits.xyz/api/Agama/${itemId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization' : 'Bearer ' + localStorage.getItem('token')
             },
             body: JSON.stringify(updatedData),
-            })
-            .then(response => response.json())
-            .then(data => {
+        })
+        .then(response => response.json())
+        .then(data => {
             // Handle the response from the server
             console.log('Update response:', data);
 
@@ -137,11 +154,16 @@
             if (data !== null) {
                 window.location.href = '/Agama';
             }
-            })
-            .catch(error => {
+        })
+        .catch(error => {
             console.error('Error updating data:', error);
-            });
         });
+    })
+    .catch(error => {
+        console.error('Error fetching existing agamas:', error);
+    });
+});
+
         </script>
     </body>
 </html>

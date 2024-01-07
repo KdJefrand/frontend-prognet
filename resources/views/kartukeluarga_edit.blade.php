@@ -35,7 +35,7 @@
                                         <div class="card-body">
                                             <form id="myForm">
                                                 <div class="form-floating mb-3">
-                                                    <input class="form-control" id="nokk" type="number" placeholder="name@example.com" />
+                                                    <input class="form-control" id="nokk" type="number" placeholder="name@example.com" readonly />
                                                     <label for="nokk">No KK</label>
                                                 </div>
                                                 <div class="form-floating mb-3">

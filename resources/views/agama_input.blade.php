@@ -83,35 +83,60 @@
         <script src="{{ asset('js/scripts.js')}}"></script>
         <script>
             document.getElementById('myForm').addEventListener('submit', function(event) {
-                event.preventDefault();
+    event.preventDefault();
 
-                // Get the value of the 'agama' input
-                const agamaValue = document.getElementById('agama').value;
+    // Get the value of the 'agama' input
+    const agamaValue = document.getElementById('agama').value;
 
-                // Prepare the form data
-                const formData = new FormData();
-                formData.append('agama', agamaValue);
+    // Fetch existing data to check if it already exists
+    fetch('https://api-group4-prognet.manpits.xyz/api/Agama', {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('token')
+        }
+    })
+    .then(response => response.json())
+    .then(existingData => {
+        // Check if the data already exists
+        const dataExists = existingData.some(item => {
+            return item.agama === agamaValue;
+        });
 
-                // Make a POST request using the Fetch API
-                fetch('https://api-group4-prognet.manpits.xyz/api/Agama', {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'Authorization' : 'Bearer ' + localStorage.getItem('token')
-                    },
-                })
-                .then(response => response.json())
-                .then(data => {
-                    // Handle the response from the server (you can replace this with your logic)
-                    console.log('Server response:', data);
-                    if (data !== null) {
-                        window.location.href = '/Agama';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error submitting form:', error);
-                });
+        if (dataExists) {
+            // Handle the case where the data already exists
+            alert('Agama Dengan Nama Tersebut Sudah Ada!');
+        } else {
+            // Data doesn't exist, proceed with insertion or saving
+            // Prepare the form data
+            const formData = new FormData();
+            formData.append('agama', agamaValue);
+
+            // Make a POST request using the Fetch API
+            fetch('https://api-group4-prognet.manpits.xyz/api/Agama', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Handle the response from the server (you can replace this with your logic)
+                console.log('Server response:', data);
+                if (data !== null) {
+                    window.location.href = '/Agama';
+                }
+            })
+            .catch(error => {
+                console.error('Error submitting form:', error);
             });
+        }
+    })
+    .catch(error => {
+        console.error('Error fetching existing data:', error);
+    });
+});
+
         </script>
     </body>
 </html>
