@@ -231,7 +231,7 @@
                                     // Handle the response from the server (you can replace this with your logic)
                                     console.log('Server response:', data);
                                     if (data !== null) {
-                                        //window.location.href = `/KK/Anggota/${itemId}`;
+                                        window.location.href = `/KK/Anggota/${itemId}`;
                                     }
                                 })
                                 .catch(error => {
