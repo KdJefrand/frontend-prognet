@@ -200,7 +200,7 @@
                             // Handle the case where the NIK already exists
                             alert('Penduduk sudah terdaftar!');
                         } else {
-                            fetch(`https://api-group4-prognet.manpits.xyz/api/HubunganKK`, {
+                            fetch(`https://api-group4-prognet.manpits.xyz/api/KK/Anggota/${itemId}`, {
                                     method: 'GET',
                                     headers: {
                                         'Authorization': 'Bearer ' + localStorage.getItem('token')
@@ -212,11 +212,7 @@
                                         console.log(hubungan.hubungankk);
                                         console.log(hubValue);
                                         if (hubungan.hubungankk == "Kepala Keluarga") {
-                                            if (hubungan.id == hubValue) {
-                                                return true;
-                                            } else {
-                                                return false;
-                                            }
+                                            return true;
                                         }
                                     });
 
